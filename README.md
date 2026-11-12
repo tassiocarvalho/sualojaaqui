@@ -212,6 +212,7 @@ Para trocar o **padrão de fábrica** de uma nova instalação, edite `DEFAULT_S
 | **Térmica de rede (ESC/POS)** | Térmicas com placa de rede | A API envia ESC/POS direto para `IP:9100`, sem janela de impressão. Acentos em PC860, corte de papel e **abertura de gaveta** nas vendas em dinheiro |
 
 - **Imprimir sem a janela de confirmação** (térmica USB): abra o navegador com `--kiosk-printing`. Exemplo de atalho: `msedge.exe --kiosk-printing --app=http://localhost:3000/caixa`.
+  Pronto para usar: `powershell -ExecutionPolicy Bypass -File scriptswindowscriar-atalho-caixa.ps1` cria na Área de Trabalho o atalho **SuaLojaAqui - Caixa** (com o ícone do sistema), que abre o caixa com impressão direta na impressora padrão do Windows e, se o sistema estiver desligado, liga com `npm start` e espera ficar pronto.
 - **Gaveta de dinheiro na USB**: ative a abertura da gaveta no driver da impressora.
 - **PDF**: comprovante, orçamento e fechamento têm o botão **PDF**, que gera o arquivo (A4 ou no formato da bobina) até offline.
 - Se a impressora de rede não responder, o sistema avisa e imprime pelo navegador.
@@ -1138,7 +1139,7 @@ No fim do `setup` aparece a **senha provisória do `admin`**. Anote, porque ela 
 | **Desligar** | Fechar a janela *SuaLojaAqui* (o banco desliga com segurança) |
 | **Ligar com o Windows** | Windows + R → `shell:startup` → colocar um atalho do `iniciar-sistema.bat` |
 | **Outros PCs, tablets e celulares** | Na mesma rede: `http://IP-DO-COMPUTADOR:3000` (veja o IP com `ipconfig`). Se não abrir, libere a porta TCP 3000 no Firewall do Windows |
-| **Caixa sem janela de impressão** | Atalho: `msedge.exe --kiosk-printing --app=http://localhost:3000/caixa` |
+| **Caixa sem janela de impressão** | `scriptswindowscriar-atalho-caixa.ps1` cria o atalho (liga o sistema se preciso) — ou `msedge.exe --kiosk-printing --app=http://localhost:3000/caixa` |
 
 ### Primeiros passos na loja
 
