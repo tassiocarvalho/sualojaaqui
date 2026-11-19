@@ -275,8 +275,13 @@ function TopBar({ onSearch }: { onSearch: () => void }) {
       <nav aria-label="Você está em" className="flex min-w-0 items-center gap-1.5 text-sm">
         {page && (
           <>
-            <span className="text-slate-500">{page.group}</span>
-            <ChevronRight className="size-3.5 shrink-0 text-slate-400" />
+            {/* "Vendas › Vendas" seria repetição: mostra só a tela. */}
+            {page.group !== page.label && (
+              <>
+                <span className="text-slate-500">{page.group}</span>
+                <ChevronRight className="size-3.5 shrink-0 text-slate-400" />
+              </>
+            )}
             <span className="truncate font-medium text-slate-900">{page.label}</span>
           </>
         )}

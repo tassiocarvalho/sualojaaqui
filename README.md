@@ -114,7 +114,7 @@ A segunda fase (clientes, troca/devolução, vale-troca, fiado, compras com nota
 | 🔑 **Esqueci minha senha** | Código de 6 números por e-mail (Gmail com senha de app ou outro SMTP), válido por 15 min |
 | ⚖️ **LGPD** | Termo de Uso e Política de Privacidade com aceite versionado, “Baixar meus dados”, anonimização e retenção automática |
 | ⚙️ **Configurações** | Regras ajustáveis sem programação (caixa, balança, trocas, vales, fiado, reposição, PIN e lixeira) |
-| 🧭 **Navegação** | Menu lateral em grupos (Operação, Vendas, Estoque, Financeiro, Administração), recolhível, e **busca rápida Ctrl+K** por telas, produtos e clientes |
+| 🧭 **Navegação** | Visual de ERP limpo: menu lateral claro em grupos (Operação, Vendas, Estoque, Financeiro, Administração), recolhível, com a tela atual na cor da loja; **barra superior** com o caminho da tela, **busca rápida Ctrl+K** (telas, produtos e clientes), tema e perfil |
 | 📴 **Estoque offline** | Entradas e saídas registradas sem internet sincronizam quando a conexão volta |
 | 🔌 **Integração PDV** | O caixa consulta o estoque e envia as vendas automaticamente |
 
@@ -122,7 +122,7 @@ A segunda fase (clientes, troca/devolução, vale-troca, fiado, compras com nota
 
 ## 🖼️ Telas
 
-| Frente de caixa | Pagamento (dinheiro + PIX, com troco) |
+| Frente de caixa | Pagamento (formas com atalhos F1–F9 e troco) |
 |:-:|:-:|
 | <img src="docs/screenshots/pdv-caixa.png" width="440" /> | <img src="docs/screenshots/pdv-pagamento.png" width="440" /> |
 | **Venda concluída** | **Fechamento de caixa** |
