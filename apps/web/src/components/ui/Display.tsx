@@ -3,12 +3,12 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
 export function Card({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn('rounded-xl border border-slate-200/80 bg-white shadow-card', className)}>{children}</div>;
+  return <div className={cn('rounded-lg border border-slate-200 bg-white shadow-card', className)}>{children}</div>;
 }
 
 export function CardHeader({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-3.5">
       <div>
         <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
         {description && <p className="mt-0.5 text-xs text-slate-500">{description}</p>}
@@ -20,9 +20,9 @@ export function CardHeader({ title, description, actions }: { title: string; des
 
 export function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{title}</h1>
+        <h1 className="text-[22px] font-semibold tracking-tight text-slate-900">{title}</h1>
         {description && <p className="mt-1 text-sm text-slate-500">{description}</p>}
       </div>
       {actions && <div className="no-print flex flex-wrap gap-2">{actions}</div>}
@@ -46,7 +46,7 @@ export function Badge({ tone = 'neutral', children, dot }: { tone?: Tone; childr
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset',
+        'inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset',
         TONES[tone],
       )}
     >
@@ -84,14 +84,14 @@ export function StatCard({
     <Component
       onClick={onClick}
       className={cn(
-        'flex items-center gap-4 rounded-xl border border-slate-200/80 bg-white p-4 text-left shadow-card',
-        onClick && 'transition hover:border-brand-300 hover:shadow-md',
+        'flex items-center gap-4 rounded-lg border border-slate-200 bg-white p-4 text-left shadow-card',
+        onClick && 'transition hover:border-brand-300 hover:bg-brand-50/30',
       )}
     >
-      <span className={cn('flex size-11 shrink-0 items-center justify-center rounded-xl', iconTone)}>{icon}</span>
+      <span className={cn('flex size-10 shrink-0 items-center justify-center rounded-lg', iconTone)}>{icon}</span>
       <span className="min-w-0">
         <span className="block text-xs font-medium text-slate-500">{label}</span>
-        <span className="block text-2xl font-semibold tracking-tight text-slate-900">{value}</span>
+        <span className="block text-2xl font-semibold tracking-tight text-slate-900 tabular-nums">{value}</span>
         {hint && <span className="block truncate text-xs text-slate-400">{hint}</span>}
       </span>
     </Component>
@@ -189,14 +189,14 @@ export function Tabs<T extends string>({
   options: { value: T; label: string; count?: number }[];
 }) {
   return (
-    <div className="no-print inline-flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1">
+    <div className="no-print inline-flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-100/70 p-1">
       {options.map((option) => (
         <button
           key={option.value}
           onClick={() => onChange(option.value)}
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition',
-            value === option.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800',
+            'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition',
+            value === option.value ? 'bg-white text-brand-800 shadow-sm ring-1 ring-slate-200' : 'text-slate-500 hover:text-slate-800',
           )}
         >
           {option.label}

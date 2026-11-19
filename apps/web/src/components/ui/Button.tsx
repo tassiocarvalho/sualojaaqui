@@ -6,11 +6,11 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
 type Size = 'sm' | 'md' | 'lg' | 'icon';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-brand-700 text-white shadow-sm hover:bg-brand-800 disabled:bg-brand-700/60',
-  secondary: 'bg-brand-50 text-brand-800 hover:bg-brand-100',
-  outline: 'border border-slate-300 bg-white text-slate-700 shadow-sm hover:bg-slate-50',
+  primary: 'bg-brand-700 text-white shadow-sm ring-1 ring-inset ring-black/5 hover:bg-brand-800 active:bg-brand-900 disabled:bg-brand-700/60',
+  secondary: 'bg-brand-50 text-brand-800 ring-1 ring-inset ring-brand-200/70 hover:bg-brand-100',
+  outline: 'border border-slate-300 bg-white text-slate-700 shadow-sm hover:border-slate-400 hover:bg-slate-50 active:bg-slate-100',
   ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-  danger: 'bg-red-600 text-white shadow-sm hover:bg-red-700 disabled:bg-red-600/60',
+  danger: 'bg-red-600 text-white shadow-sm hover:bg-red-700 active:bg-red-800 disabled:bg-red-600/60',
 };
 
 const SIZES: Record<Size, string> = {
@@ -43,7 +43,7 @@ export function Button({
       type={type}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-lg font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-70',
+        'inline-flex shrink-0 items-center justify-center rounded-md font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-70',
         VARIANTS[variant],
         SIZES[size],
         className,
@@ -67,7 +67,7 @@ export function IconButton({
       title={label}
       aria-label={label}
       className={cn(
-        'inline-flex size-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40',
+        'inline-flex size-8 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40',
         className,
       )}
       {...props}

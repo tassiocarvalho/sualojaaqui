@@ -49,18 +49,18 @@ export function Modal({ open, onClose, title, description, children, footer, siz
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-900/45" onClick={onClose} />
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label={title}
         className={cn(
-          'relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-xl sm:rounded-2xl',
+          'relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-xl border border-slate-200 bg-white shadow-pop sm:rounded-xl',
           SIZES[size],
         )}
       >
-        <header className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-4">
+        <header className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-4">
           <div>
             <h2 className="text-base font-semibold text-slate-900">{title}</h2>
             {description && <p className="mt-0.5 text-sm text-slate-500">{description}</p>}
@@ -69,14 +69,14 @@ export function Modal({ open, onClose, title, description, children, footer, siz
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="-mr-2 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            className="-mr-2 rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
           >
             <X className="size-5" />
           </button>
         </header>
         {children && <div className="overflow-y-auto px-6 py-5">{children}</div>}
         {footer && (
-          <footer className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-3">{footer}</footer>
+          <footer className="flex justify-end gap-2 border-t border-slate-200 bg-slate-50 px-6 py-3">{footer}</footer>
         )}
       </div>
     </div>,

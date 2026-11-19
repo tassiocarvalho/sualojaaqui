@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  ChevronRight,
   CloudOff,
   LogOut,
   Menu,
@@ -10,7 +11,6 @@ import {
   Scale,
   Search,
   Sun,
-  UserCircle,
   X,
 } from 'lucide-react';
 import { Suspense, useCallback, useEffect, useState } from 'react';
@@ -43,15 +43,36 @@ function Brand({ collapsed }: { collapsed?: boolean }) {
   const { branding, logo } = useBranding();
   return (
     <div className="flex min-w-0 items-center gap-2.5" title={collapsed ? branding.name : undefined}>
-      <img src={logo} alt="" className="size-9 shrink-0 rounded-lg bg-white/10 object-contain" />
+      <img src={logo} alt="" className="size-8 shrink-0 rounded-md border border-slate-200 bg-white object-contain" />
       {!collapsed && (
         <div className="min-w-0 leading-tight">
-          <p className="truncate text-sm font-semibold text-white">{branding.name}</p>
-          {branding.tagline && <p className="truncate text-[11px] text-white/60">{branding.tagline}</p>}
+          <p className="truncate text-sm font-semibold text-slate-900">{branding.name}</p>
+          {branding.tagline && <p className="truncate text-[11px] text-slate-500">{branding.tagline}</p>}
         </div>
       )}
     </div>
   );
+}
+
+/** Iniciais do usuário para o avatar ("Maria Souza" → "MS"). */
+function initials(name?: string) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? '') + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase();
+}
+
+/** Grupo e nome da tela atual, a partir do menu (ex.: Estoque › Produtos). */
+function useCurrentPage() {
+  const { pathname } = useLocation();
+  for (const group of NAV_GROUPS) {
+    for (const item of group.items) {
+      const match = item.to === '/' ? pathname === '/' : pathname === item.to || pathname.startsWith(`${item.to}/`);
+      if (match) return { group: group.title, label: item.label };
+    }
+  }
+  if (pathname.startsWith('/perfil')) return { group: 'Conta', label: 'Meu perfil' };
+  if (pathname.startsWith('/termos')) return { group: 'Conta', label: 'Termos e privacidade' };
+  return null;
 }
 
 export function ThemeToggle({ className }: { className?: string }) {
@@ -73,15 +94,15 @@ export function ThemeToggle({ className }: { className?: string }) {
 interface SidebarProps {
   /** Só no celular: fecha o menu deslizante ao navegar. */
   onNavigate?: () => void;
-  onSearch: () => void;
   /** Só no computador: menu recolhido mostra apenas os ícones. */
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
 }
 
-function Sidebar({ onNavigate, onSearch, collapsed = false, onToggleCollapsed }: SidebarProps) {
+function Sidebar({ onNavigate, collapsed = false, onToggleCollapsed }: SidebarProps) {
   const { user, can, logout } = useAuth();
   const navigate = useNavigate();
+  const mobile = Boolean(onNavigate);
 
   const handleLogout = async () => {
     await logout();
@@ -90,59 +111,31 @@ function Sidebar({ onNavigate, onSearch, collapsed = false, onToggleCollapsed }:
 
   // Recolhido: só o ícone, centralizado, com o nome no "title" (dica ao passar o mouse).
   const itemClass = cn(
-    'flex items-center rounded-lg py-2 text-sm font-medium transition-colors',
-    collapsed ? 'justify-center px-0' : 'gap-3 px-3',
+    'relative flex items-center rounded-md py-[7px] text-[13.5px] font-medium transition-colors',
+    collapsed ? 'justify-center px-0' : 'gap-2.5 px-2.5',
   );
-  const footerClass = cn(itemClass, 'text-white/75 hover:bg-white/6 hover:text-white');
+  const footerClass = cn(itemClass, 'text-slate-600 hover:bg-slate-100 hover:text-slate-900');
 
   return (
-    <div className="flex h-full flex-col bg-brand-900 text-white">
-      <div className={cn('flex items-center gap-2 py-5', collapsed ? 'justify-center px-2' : 'justify-between px-5')}>
+    <div className="flex h-full flex-col border-r border-slate-200 bg-white text-slate-700">
+      <div className={cn('flex h-14 shrink-0 items-center border-b border-slate-200', collapsed ? 'justify-center px-2' : 'px-4')}>
         <Brand collapsed={collapsed} />
-        {/* No celular o botão de tema fica no cabeçalho (aqui fica o "fechar menu"). */}
-        {!onNavigate && !collapsed && <ThemeToggle className="text-white/70 hover:bg-white/10 hover:text-white" />}
       </div>
 
-      <div className={cn('pb-2', collapsed ? 'px-2' : 'px-3')}>
-        <button
-          type="button"
-          onClick={() => {
-            onNavigate?.();
-            onSearch();
-          }}
-          title={collapsed ? `Busca rápida (${SEARCH_SHORTCUT})` : undefined}
-          aria-label="Busca rápida"
-          className={cn(
-            'flex w-full items-center rounded-lg bg-white/8 py-2 text-sm text-white/65 ring-1 ring-white/10 transition-colors hover:bg-white/12 hover:text-white',
-            collapsed ? 'justify-center' : 'gap-2.5 px-3',
-          )}
-        >
-          <Search className="size-4 shrink-0" />
-          {!collapsed && (
-            <>
-              <span className="flex-1 text-left">Buscar…</span>
-              <kbd className="rounded border border-white/20 px-1.5 text-[10px] font-semibold text-white/60">
-                {SEARCH_SHORTCUT}
-              </kbd>
-            </>
-          )}
-        </button>
-      </div>
-
-      <nav className={cn('sidebar-scroll flex-1 overflow-y-auto py-2', collapsed ? 'space-y-3 px-2' : 'space-y-6 px-3')}>
+      <nav className={cn('sidebar-scroll flex-1 overflow-y-auto py-3', collapsed ? 'space-y-3 px-2' : 'space-y-5 px-3')}>
         {NAV_GROUPS.map((group) => {
           const items = group.items.filter((item) => can(item.permission));
           if (items.length === 0) return null;
           return (
             <div key={group.title}>
               {collapsed ? (
-                <div className="mx-2 mb-2 border-t border-white/10" aria-hidden />
+                <div className="mx-2 mb-2 border-t border-slate-200" aria-hidden />
               ) : (
-                <p className="mb-1.5 px-3 text-[11px] font-semibold tracking-wider text-white/45 uppercase">
+                <p className="mb-1 px-2.5 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
                   {group.title}
                 </p>
               )}
-              <ul className="space-y-0.5">
+              <ul className="space-y-px">
                 {items.map(({ to, label, icon: Icon }) => (
                   <li key={to}>
                     <NavLink
@@ -154,12 +147,19 @@ function Sidebar({ onNavigate, onSearch, collapsed = false, onToggleCollapsed }:
                       className={({ isActive }) =>
                         cn(
                           itemClass,
-                          isActive ? 'bg-white/12 text-white' : 'text-white/75 hover:bg-white/6 hover:text-white',
+                          isActive
+                            ? 'bg-brand-50 text-brand-800 before:absolute before:inset-y-1.5 before:-left-3 before:w-[3px] before:rounded-r before:bg-brand-600'
+                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                          isActive && collapsed && 'before:-left-2',
                         )
                       }
                     >
-                      <Icon className="size-[18px] shrink-0" />
-                      {!collapsed && label}
+                      {({ isActive }) => (
+                        <>
+                          <Icon className={cn('size-[18px] shrink-0', isActive ? 'text-brand-700' : 'text-slate-400')} />
+                          {!collapsed && <span className="truncate">{label}</span>}
+                        </>
+                      )}
                     </NavLink>
                   </li>
                 ))}
@@ -169,47 +169,29 @@ function Sidebar({ onNavigate, onSearch, collapsed = false, onToggleCollapsed }:
         })}
       </nav>
 
-      <div className={cn('border-t border-white/10', collapsed ? 'space-y-0.5 p-2' : 'p-3')}>
-        <a
-          href={MANUAL_URL}
-          target="_blank"
-          rel="noopener"
-          title={collapsed ? 'Manual de uso' : undefined}
-          className={cn(footerClass, 'mb-1 text-brand-100/80')}
-        >
-          <BookOpen className="size-[18px] shrink-0" />
+      <div className={cn('space-y-px border-t border-slate-200', collapsed ? 'p-2' : 'p-3')}>
+        <a href={MANUAL_URL} target="_blank" rel="noopener" title={collapsed ? 'Manual de uso' : undefined} className={footerClass}>
+          <BookOpen className="size-[18px] shrink-0 text-slate-400" />
           {!collapsed && 'Manual de uso'}
         </a>
-        <Link
-          to="/termos"
-          onClick={onNavigate}
-          title={collapsed ? 'Termos e privacidade' : undefined}
-          className={cn(footerClass, 'mb-1 text-brand-100/80')}
-        >
-          <Scale className="size-[18px] shrink-0" />
+        <Link to="/termos" onClick={onNavigate} title={collapsed ? 'Termos e privacidade' : undefined} className={footerClass}>
+          <Scale className="size-[18px] shrink-0 text-slate-400" />
           {!collapsed && 'Termos e privacidade'}
         </Link>
-        {collapsed && (
-          <div className="flex justify-center">
-            <ThemeToggle className="p-2 text-white/75 hover:bg-white/6 hover:text-white" />
-          </div>
-        )}
-        <NavLink
-          to="/perfil"
-          onClick={onNavigate}
-          title={collapsed ? `${user?.name ?? ''} — Meu perfil` : undefined}
-          className={cn('flex items-center rounded-lg py-2 hover:bg-white/6', collapsed ? 'justify-center' : 'gap-3 px-3')}
-        >
-          <UserCircle className={cn('shrink-0 text-white/70', collapsed ? 'size-7' : 'size-8')} />
-          {!collapsed && (
-            <span className="min-w-0 flex-1 leading-tight">
-              <span className="block truncate text-sm font-medium text-white">{user?.name}</span>
-              <span className="block text-xs text-white/55">{user && ROLE_LABELS[user.role]}</span>
+        {/* No celular não há barra superior: o perfil fica aqui. */}
+        {mobile && (
+          <NavLink to="/perfil" onClick={onNavigate} className="flex items-center gap-2.5 rounded-md px-2.5 py-2 hover:bg-slate-100">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-800">
+              {initials(user?.name)}
             </span>
-          )}
-        </NavLink>
-        <button onClick={handleLogout} title={collapsed ? 'Sair' : undefined} className={cn(footerClass, 'mt-1 w-full')}>
-          <LogOut className="size-[18px] shrink-0" />
+            <span className="min-w-0 flex-1 leading-tight">
+              <span className="block truncate text-sm font-medium text-slate-900">{user?.name}</span>
+              <span className="block text-xs text-slate-500">{user && ROLE_LABELS[user.role]}</span>
+            </span>
+          </NavLink>
+        )}
+        <button onClick={handleLogout} title={collapsed ? 'Sair' : undefined} className={cn(footerClass, 'w-full')}>
+          <LogOut className="size-[18px] shrink-0 text-slate-400" />
           {!collapsed && 'Sair'}
         </button>
         {onToggleCollapsed && (
@@ -219,7 +201,7 @@ function Sidebar({ onNavigate, onSearch, collapsed = false, onToggleCollapsed }:
             title={collapsed ? 'Expandir menu' : undefined}
             aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
             aria-expanded={!collapsed}
-            className={cn(footerClass, 'mt-1 w-full text-white/55')}
+            className={cn(footerClass, 'w-full text-slate-500')}
           >
             {collapsed ? (
               <PanelLeftOpen className="size-[18px] shrink-0" />
@@ -284,6 +266,53 @@ export function ConnectionBar() {
   );
 }
 
+/** Barra superior (computador): onde estou, busca rápida, tema e usuário. */
+function TopBar({ onSearch }: { onSearch: () => void }) {
+  const { user } = useAuth();
+  const page = useCurrentPage();
+  return (
+    <header className="no-print sticky top-0 z-20 hidden h-14 items-center gap-4 border-b border-slate-200 bg-white/95 px-6 backdrop-blur lg:flex">
+      <nav aria-label="Você está em" className="flex min-w-0 items-center gap-1.5 text-sm">
+        {page && (
+          <>
+            <span className="text-slate-500">{page.group}</span>
+            <ChevronRight className="size-3.5 shrink-0 text-slate-400" />
+            <span className="truncate font-medium text-slate-900">{page.label}</span>
+          </>
+        )}
+      </nav>
+
+      <button
+        type="button"
+        onClick={onSearch}
+        aria-label="Busca rápida"
+        className="ml-auto flex h-9 w-72 items-center gap-2 rounded-md border border-slate-300 bg-slate-50 px-3 text-sm text-slate-500 transition-colors hover:border-slate-400 hover:bg-white xl:w-80"
+      >
+        <Search className="size-4 shrink-0" />
+        <span className="flex-1 text-left">Buscar telas, produtos…</span>
+        <kbd className="kbd">{SEARCH_SHORTCUT}</kbd>
+      </button>
+
+      <div className="flex items-center gap-1 border-l border-slate-200 pl-3">
+        <ThemeToggle className="p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900" />
+        <NavLink
+          to="/perfil"
+          title="Meu perfil"
+          className="flex items-center gap-2.5 rounded-md py-1 pr-2 pl-1 transition-colors hover:bg-slate-100"
+        >
+          <span className="flex size-8 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-800">
+            {initials(user?.name)}
+          </span>
+          <span className="hidden leading-tight xl:block">
+            <span className="block max-w-40 truncate text-sm font-medium text-slate-900">{user?.name}</span>
+            <span className="block text-[11px] text-slate-500">{user && ROLE_LABELS[user.role]}</span>
+          </span>
+        </NavLink>
+      </div>
+    </header>
+  );
+}
+
 function MobileBrand({ onSearch }: { onSearch: () => void }) {
   const { branding, logo } = useBranding();
   return (
@@ -342,7 +371,7 @@ export function AppLayout() {
           collapsed ? 'w-[72px]' : 'w-64',
         )}
       >
-        <Sidebar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} onSearch={openSearch} />
+        <Sidebar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} />
       </aside>
 
       {/* Menu deslizante (celular/tablet) */}
@@ -352,12 +381,12 @@ export function AppLayout() {
           <aside className="absolute inset-y-0 left-0 w-72 shadow-xl">
             <button
               onClick={() => setMobileOpen(false)}
-              className="absolute top-5 right-3 z-10 rounded-lg p-1 text-white/80 hover:bg-white/10"
+              className="absolute top-3.5 right-3 z-10 rounded-md p-1 text-slate-500 hover:bg-slate-100"
               aria-label="Fechar menu"
             >
               <X className="size-5" />
             </button>
-            <Sidebar onNavigate={() => setMobileOpen(false)} onSearch={openSearch} />
+            <Sidebar onNavigate={() => setMobileOpen(false)} />
           </aside>
         </div>
       )}
@@ -373,9 +402,11 @@ export function AppLayout() {
         <MobileBrand onSearch={openSearch} />
       </header>
 
+      <TopBar onSearch={openSearch} />
+
       <ConnectionBar />
 
-      <main key={location.pathname} className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <main key={location.pathname} className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
         <Suspense fallback={<LoadingState />}>
           <Outlet />
         </Suspense>

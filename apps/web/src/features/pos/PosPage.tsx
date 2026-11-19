@@ -427,23 +427,40 @@ export function PosPage() {
   if (isLoading) return <LoadingState label="Abrindo o caixa..." />;
 
   const header = (
-    <header className="flex h-12 shrink-0 items-center gap-3 bg-brand-900 px-4 text-white">
+    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 shadow-card">
       {can(P.PRODUCT_READ) && user?.role !== 'CASHIER' && (
-        <Link to="/" className="rounded-lg p-1.5 text-white/70 hover:bg-white/10 hover:text-white" title="Voltar ao painel" aria-label="Voltar ao painel">
-          <ArrowLeft className="size-[18px]" />
+        <Link
+          to="/"
+          className="flex h-9 items-center gap-1.5 rounded-md border border-slate-300 px-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          title="Voltar ao painel"
+          aria-label="Voltar ao painel"
+        >
+          <ArrowLeft className="size-4" />
+          <span className="hidden md:inline">Painel</span>
         </Link>
       )}
-      <img src={logo} alt="" className="size-7 rounded-md bg-white/10 object-contain" />
-      <span className="truncate text-sm font-semibold">{branding.name}</span>
-      <span className="hidden text-sm text-white/60 sm:inline">· Frente de caixa</span>
-      <span className="ml-auto flex items-center gap-1">
-        <ThemeToggle className="text-white/70 hover:bg-white/10 hover:text-white" />
+      <img src={logo} alt="" className="size-8 rounded-md border border-slate-200 bg-white object-contain" />
+      <span className="min-w-0 leading-tight">
+        <span className="block truncate text-sm font-semibold text-slate-900">{branding.name}</span>
+        <span className="hidden text-[11px] font-medium tracking-wider text-brand-700 uppercase sm:block">Frente de caixa</span>
+      </span>
+      <span className="ml-auto flex items-center gap-2">
+        {session && (
+          <span className="hidden items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-600/15 ring-inset sm:inline-flex">
+            <span className="size-1.5 rounded-full bg-emerald-500" />
+            Caixa aberto · {session.terminal}
+          </span>
+        )}
+        <span className="hidden text-sm font-semibold text-slate-700 tabular-nums md:inline">
+          {clock.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+        </span>
+        <ThemeToggle className="p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900" />
       </span>
     </header>
   );
 
   const footer = (
-    <footer className="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-1 border-t border-slate-200 bg-white px-4 py-2 text-xs text-slate-600">
+    <footer className="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-1 border-t border-slate-200 bg-white px-4 py-1.5 text-xs text-slate-600">
       <span className="flex items-center gap-1.5 font-medium">
         <span className={cn('size-2 rounded-full', session ? 'bg-emerald-500' : 'bg-slate-400')} />
         {session ? `Caixa aberto · ${session.terminal}` : `Caixa fechado · ${terminal}`}
@@ -461,14 +478,14 @@ export function PosPage() {
           {pendingSales.length} venda(s) aguardando envio{pendingSales.some((s) => s.error) && ' (com erro)'}
         </button>
       )}
-      <span className="ml-auto tabular-nums">{clock.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+      <span className="ml-auto tabular-nums md:hidden">{clock.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
       <PendingQueueModal open={queueOpen} onClose={() => setQueueOpen(false)} />
     </footer>
   );
 
   if (!session) {
     return (
-      <div className="flex h-dvh flex-col bg-slate-50">
+      <div className="flex h-dvh flex-col bg-[var(--canvas)]">
         {header}
         <OpenCashScreen terminal={terminal} online={online} onOpen={openCash} />
         {footer}
@@ -479,7 +496,7 @@ export function PosPage() {
   const discountTotal = fromCents(totals.itemsDiscountCents + totals.orderDiscountCents);
 
   return (
-    <div className="flex h-dvh flex-col bg-slate-50">
+    <div className="flex h-dvh flex-col bg-[var(--canvas)]">
       {header}
 
       <div className="grid min-h-0 flex-1 gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_25rem]">
@@ -489,11 +506,11 @@ export function PosPage() {
             beep('error');
             toast.error(message);
           }} />
-          <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-card">
+          <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-card">
             {hasItems ? (
               <div className="h-full overflow-y-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="sticky top-0 z-10 bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                  <thead className="sticky top-0 z-10 border-b border-slate-200 bg-slate-50 text-[11px] font-semibold tracking-wider text-slate-500 uppercase">
                     <tr>
                       <th className="w-12 px-3 py-2.5">#</th>
                       <th className="px-3 py-2.5">Produto</th>
@@ -539,8 +556,10 @@ export function PosPage() {
               </div>
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center text-slate-400">
-                <ShoppingCart className="size-14" strokeWidth={1.25} />
-                <p className="text-lg font-medium text-slate-500">Caixa livre</p>
+                <span className="flex size-20 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                  <ShoppingCart className="size-9" strokeWidth={1.5} />
+                </span>
+                <p className="text-xl font-semibold text-slate-700">Caixa livre</p>
                 <p className="max-w-xs text-sm">
                   Bipe um produto ou pressione <kbd className="kbd">F1</kbd> e digite o nome para começar a venda.
                 </p>
@@ -551,7 +570,7 @@ export function PosPage() {
 
         {/* Direita: item selecionado, totais e atalhos */}
         <aside className="flex min-h-0 flex-col gap-3 overflow-y-auto">
-          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-card">
+          <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-card">
             {selected ? (
               <>
                 <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">Item selecionado</p>
@@ -580,7 +599,7 @@ export function PosPage() {
           <button
             type="button"
             onClick={actions.Insert}
-            className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-left shadow-card transition hover:border-brand-300"
+            className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-left shadow-card transition hover:border-brand-300"
           >
             <UserRound className={cn('size-5 shrink-0', cart.customer || cart.customerDocument ? 'text-brand-700' : 'text-slate-400')} />
             <span className="min-w-0 flex-1 leading-tight">
@@ -596,8 +615,8 @@ export function PosPage() {
             <kbd className="kbd">Ins</kbd>
           </button>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
-            <dl className="space-y-1 text-sm">
+          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-card">
+            <dl className="space-y-1 px-4 pt-3.5 pb-3 text-sm">
               <div className="flex justify-between text-slate-600">
                 <dt>Subtotal ({cart.items.length} {cart.items.length === 1 ? 'item' : 'itens'})</dt>
                 <dd className="tabular-nums">{formatMoney(fromCents(totals.grossCents))}</dd>
@@ -612,14 +631,16 @@ export function PosPage() {
                 </div>
               )}
             </dl>
-            <div className="mt-3 flex items-end justify-between border-t border-slate-100 pt-3">
-              <span className="text-sm font-semibold tracking-wide text-slate-500 uppercase">Total</span>
-              <span className="text-4xl font-bold tracking-tight text-slate-900 tabular-nums">{formatMoney(fromCents(totals.totalCents))}</span>
+            <div className="flex items-end justify-between border-y border-brand-100 bg-brand-50 px-4 py-3">
+              <span className="pb-1 text-xs font-semibold tracking-wider text-brand-800 uppercase">Total a pagar</span>
+              <span className="text-4xl font-bold tracking-tight text-brand-900 tabular-nums">{formatMoney(fromCents(totals.totalCents))}</span>
             </div>
-            {totals.error && <p className="mt-2 text-xs font-medium text-red-600">{totals.error}</p>}
-            <Button size="lg" className="mt-3 h-13 w-full text-lg" disabled={!hasItems} onClick={actions.F5}>
-              Finalizar venda <kbd className="kbd border-white/30 bg-white/15 text-white">F5</kbd>
-            </Button>
+            <div className="p-3">
+              {totals.error && <p className="mb-2 text-xs font-medium text-red-600">{totals.error}</p>}
+              <Button size="lg" className="h-13 w-full text-lg" disabled={!hasItems} onClick={actions.F5}>
+                Finalizar venda <kbd className="kbd border-white/30 bg-white/15 text-white">F5</kbd>
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-3 gap-1.5">
@@ -638,7 +659,7 @@ export function PosPage() {
             <Shortcut keyName="F11" label="Troca, fiado e vale" onClick={actions.F11} className="col-span-3" />
           </div>
           {exchangeCredit && (
-            <div className="flex items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+            <div className="flex items-center justify-between gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
               <span>
                 Troca: vale <b>{exchangeCredit.code}</b> de {formatMoney(exchangeCredit.balance)} entra no pagamento
               </span>
@@ -835,7 +856,7 @@ function Shortcut({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-left text-[13px] font-medium shadow-sm transition hover:border-brand-300 hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:border-slate-200 disabled:hover:bg-white',
+        'flex min-h-11 items-center gap-2 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-left text-[13px] font-medium shadow-card transition hover:border-brand-300 hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:border-slate-200 disabled:hover:bg-white',
         tone === 'danger' ? 'text-red-700' : 'text-slate-700',
         className,
       )}
@@ -865,7 +886,7 @@ function SaleCompleteModal({
           <p className="text-sm text-slate-500">
             {sale.number > 0 ? `Venda nº ${String(sale.number).padStart(6, '0')}` : 'Venda salva offline (o número sai ao sincronizar)'}
           </p>
-          <div className="rounded-xl bg-slate-50 p-4">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
             <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">Troco</p>
             <p className={cn('text-4xl font-bold tabular-nums', sale.change > 0 ? 'text-emerald-700' : 'text-slate-400')}>{formatMoney(sale.change)}</p>
             <p className="mt-1 text-sm text-slate-500">Total {formatMoney(sale.total)}</p>

@@ -12,3 +12,6 @@ apps/desktop/release/
 
 # Cache do TypeScript (tsc -b)
 *.tsbuildinfo
+
+# graphify (grafo de conhecimento do código)
+graphify-out/

@@ -7,6 +7,8 @@
 :root {
   --brand: #0f766e;
   --surface: #ffffff;
+  /* Fundo da aplicação: cinza-azulado bem claro, para os cartões brancos se destacarem sem sombra pesada. */
+  --canvas: #f4f6f9;
 }
 
 @theme {
@@ -24,7 +26,8 @@
   --color-brand-900: color-mix(in oklab, var(--brand) 52%, black);
   --color-brand-950: color-mix(in oklab, var(--brand) 36%, black);
 
-  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.04), 0 1px 3px rgb(16 24 40 / 0.06);
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.05);
+  --shadow-pop: 0 12px 32px -8px rgb(16 24 40 / 0.18), 0 2px 6px rgb(16 24 40 / 0.06);
 }
 
 @layer base {
@@ -33,7 +36,8 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-800;
+    @apply text-slate-800;
+    background-color: var(--canvas);
   }
 
   :focus-visible {
@@ -50,18 +54,21 @@
     @apply w-full text-left text-sm;
   }
   .table-base thead th {
-    @apply sticky top-0 bg-slate-50/95 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-500 backdrop-blur;
+    @apply sticky top-0 z-[1] border-b border-slate-200 bg-slate-50 px-4 py-2 text-[11px] font-semibold tracking-wider text-slate-500 uppercase;
   }
   .table-base tbody td {
-    @apply border-t border-slate-100 px-4 py-3 align-middle;
+    @apply border-t border-slate-100 px-4 py-2.5 align-middle;
+  }
+  .table-base tbody tr:first-child td {
+    @apply border-t-0;
   }
   .table-base tbody tr {
-    @apply transition-colors hover:bg-slate-50/80;
+    @apply transition-colors hover:bg-brand-50/50;
   }
 
   /* Tecla de atalho (F1, F5, Esc...) exibida nos botões do caixa. */
   .kbd {
-    @apply inline-flex h-5 min-w-5 items-center justify-center rounded border border-slate-300 bg-slate-100 px-1 font-mono text-[11px] font-semibold text-slate-600;
+    @apply inline-flex h-5 min-w-5 items-center justify-center rounded border border-b-2 border-slate-300 bg-white px-1 font-mono text-[10.5px] font-semibold text-slate-600;
   }
 }
 
@@ -71,6 +78,7 @@
  */
 .dark {
   --surface: #121b2e;
+  --canvas: #0b1220;
 
   --color-slate-50: #0b1220;
   --color-slate-100: #1a2438;
@@ -119,7 +127,8 @@
   background-color: rgb(0 0 0 / 0.6);
 }
 .dark .text-brand-700,
-.dark .text-brand-800 {
+.dark .text-brand-800,
+.dark .text-brand-900 {
   color: var(--color-brand-300);
 }
 .dark .shadow-card {
@@ -162,19 +171,16 @@
   display: none;
 }
 
-/* Menu lateral (fundo escuro): barra clara e translúcida, que só aparece ao passar o mouse. */
+/* Menu lateral: a barra de rolagem só aparece ao passar o mouse. */
 .sidebar-scroll {
   scrollbar-color: transparent transparent;
 }
 .sidebar-scroll:hover {
-  scrollbar-color: rgb(255 255 255 / 0.25) transparent;
+  scrollbar-color: rgb(148 163 184 / 0.45) transparent;
 }
 .sidebar-scroll::-webkit-scrollbar-thumb {
   background: transparent;
 }
 .sidebar-scroll:hover::-webkit-scrollbar-thumb {
-  background: rgb(255 255 255 / 0.25);
-}
-.sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgb(255 255 255 / 0.4);
+  background: rgb(148 163 184 / 0.45);
 }
